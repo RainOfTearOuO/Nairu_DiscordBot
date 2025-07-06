@@ -3,7 +3,7 @@ import asyncio
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-load_dotenv(dotenv_path="api_config.env")
+load_dotenv()
 shutdown_flag = False
 
 # *** Load config and main function ***

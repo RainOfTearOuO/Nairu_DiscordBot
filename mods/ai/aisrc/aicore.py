@@ -1,7 +1,7 @@
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
-load_dotenv(dotenv_path="api_config.env")
+load_dotenv()
 APIKEY = os.environ.get("APIKEY")
 MAX_CHAT_HISTORY_LENGTH = 2*6  # Maximum number of messages to keep in chat history
 
