@@ -1,6 +1,8 @@
 import os
 import asyncio
 import discord
+import signal
+import sys
 from discord.ext import commands
 from dotenv import load_dotenv
 load_dotenv()
@@ -90,10 +92,17 @@ async def load_extensions():
             if filename.endswith(".py"):
                 await bot.load_extension(f"{MODS_FOLDER}.{packageFolder}.{filename[:-3]}")
 
+def signal_handler(sig, frame):
+    print("已按下Ctrl+C，關閉Bot...")
+    loop = asyncio.get_event_loop()
+    # 在 event loop 裡排程非同步關閉任務
+    loop.create_task(bot.close())
+
 async def main():
     async with bot:
         await load_extensions()
         await bot.start(TOKEN)
 
 if __name__ == "__main__":
+    signal.signal(signal.SIGINT, signal_handler)  # Ctrl+C
     asyncio.run(main())
