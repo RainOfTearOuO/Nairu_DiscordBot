@@ -3,6 +3,8 @@ import asyncio
 import discord
 import signal
 import sys
+from aiohttp import web
+import threading
 from discord.ext import commands
 from dotenv import load_dotenv
 load_dotenv()
@@ -91,6 +93,14 @@ async def load_extensions():
         for filename in os.listdir(f"./{MODS_FOLDER}/{packageFolder}"):
             if filename.endswith(".py"):
                 await bot.load_extension(f"{MODS_FOLDER}.{packageFolder}.{filename[:-3]}")
+
+async def handle(request):
+    return web.Response(text="Bot is alive.")
+
+def run_web_server():
+    app = web.Application()
+    app.router.add_get("/", handle)
+    web.run_app(app, port=8080)
 
 def signal_handler(sig, frame):
     print("已按下Ctrl+C，關閉Bot...")
