@@ -97,10 +97,15 @@ async def load_extensions():
 async def handle(request):
     return web.Response(text="Bot is alive.")
 
-def run_web_server():
+async def run_web_server():
     app = web.Application()
     app.router.add_get("/", handle)
-    web.run_app(app, port=10000)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    port = 10000
+    site = web.TCPSite(runner, port=port)
+    await site.start()
+    print(f"Web server running on port {port}")
 
 def signal_handler(sig, frame):
     print("已按下Ctrl+C，關閉Bot...")
@@ -109,11 +114,11 @@ def signal_handler(sig, frame):
     loop.create_task(bot.close())
 
 async def main():
+    await run_web_server()
     async with bot:
         await load_extensions()
         await bot.start(TOKEN)
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)  # Ctrl+C
-    threading.Thread(target=run_web_server).start()
     asyncio.run(main())
