@@ -115,4 +115,5 @@ async def main():
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)  # Ctrl+C
+    threading.Thread(target=run_web_server).start()
     asyncio.run(main())
