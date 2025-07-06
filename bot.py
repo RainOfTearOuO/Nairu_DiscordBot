@@ -100,7 +100,7 @@ async def handle(request):
 def run_web_server():
     app = web.Application()
     app.router.add_get("/", handle)
-    web.run_app(app, port=8080)
+    web.run_app(app, port=10000)
 
 def signal_handler(sig, frame):
     print("已按下Ctrl+C，關閉Bot...")
