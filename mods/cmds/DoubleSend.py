@@ -8,9 +8,12 @@ class DoubleSend(commands.Cog):
         self._message_filter = {"男娘","南梁"}
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
+        if message.author == self.bot.user:
+            return
+
         prefix = await self.bot.get_prefix(message)
         channel_id = str(message.channel.id)
-        if message.author == self.bot.user or message.content.startswith(prefix) or self.bot.user.mentioned_in(message):
+        if message.content.startswith(prefix) or self.bot.user.mentioned_in(message):
             return
         
         for word in self._message_filter:
@@ -26,7 +29,7 @@ class DoubleSend(commands.Cog):
             async with message.channel.typing():
                 await message.channel.send(f"{message.content}")
         
-        # await self.bot.process_commands(message)
+        await self.bot.process_commands(message)
 
 # *** cog load in bot ***
 async def setup(bot):
