@@ -51,6 +51,8 @@ class Nairu(commands.Cog):
                 except Exception as e:
                     # print(f"error in AIBehavior: {e}")
                     await message.channel.send(f"```{e}```")
+        
+        await self.bot.process_commands(message)
     
     @commands.command()
     async def clear_chat(self, ctx: commands.Context, *, msg = None):
