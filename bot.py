@@ -1,4 +1,5 @@
 import os
+import traceback
 import asyncio
 import discord
 import signal
@@ -85,11 +86,17 @@ async def shutdown(ctx):
 
 @bot.event  
 async def on_command_error(ctx, error):
-    await ctx.send(f"**command ERROR**: \n{error}")
+    try:
+        await ctx.send(f"**command ERROR**: \n{error}")
+    except discord.HTTPException:
+        print(f"[on_command_error] discord.HTTPException: {error}")
+    except Exception as e:
+        print(f"[on_command_error] Exception: {e}")
 
 @bot.event
 async def on_error(event, *args, **kwargs):
-    print(event)
+    print(f"[on_error]: {event}")
+    traceback.print_exc()
 
 # load all extensions (only use while start bot.py)
 async def load_extensions(): 
