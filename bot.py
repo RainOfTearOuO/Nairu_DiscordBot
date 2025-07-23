@@ -87,6 +87,10 @@ async def shutdown(ctx):
 async def on_command_error(ctx, error):
     await ctx.send(f"**command ERROR**: \n{error}")
 
+@bot.event
+async def on_error(event, *args, **kwargs):
+    print(event)
+
 # load all extensions (only use while start bot.py)
 async def load_extensions(): 
     for packageFolder in os.listdir(f"./{MODS_FOLDER}"):

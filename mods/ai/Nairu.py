@@ -1,4 +1,5 @@
 import discord
+import asyncio
 from discord.ext import commands
 
 import importlib
@@ -11,6 +12,7 @@ class Nairu(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self._message_filter = {"男娘", "南梁"}
+
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if message.author == self.bot.user:
@@ -18,7 +20,9 @@ class Nairu(commands.Cog):
         
         if message.reference: # user uses reply to answer bot
             try:
-                replied_message = await message.channel.fetch_message(message.reference.message_id)
+                replied_message = message.reference.resolved
+                if replied_message is None:
+                    replied_message = await message.channel.fetch_message(message.reference.message_id)
                 
                 if replied_message.author == self.bot.user:
                     async with message.channel.typing():
@@ -31,25 +35,36 @@ class Nairu(commands.Cog):
                             if word in final_msg:
                                 await message.reply(f"Filtered.")
                                 return
+                        await asyncio.sleep(1)
                         await message.reply(f"{response}")
+            
+            except discord.HTTPException as e:
+                raise e
+            
             except Exception as e:
-                # print(f"error in AIBehavior: {e}")
+                await asyncio.sleep(1)
                 await message.channel.send(f"```{e}```")
+        
         elif self.bot.user.mentioned_in(message): # user mentions bot
             async with message.channel.typing():
                 try:
                     msg_without_mention = message.content.replace(f"<@{self.bot.user.id}>", "").strip()
                     final_msg = f"{message.author.name}：{msg_without_mention}"
                     response = chat_manager.send_to_ai(final_msg, str(message.channel.id))
-                    # print(f"finalmsg: {final_msg}")
-                    # print(response)
+
                     for word in self._message_filter:
                         if word in final_msg:
+                            await asyncio.sleep(1)
                             await message.reply(f"Filtered.")
                             return
+                    await asyncio.sleep(1)
                     await message.reply(f"{response}")
+
+                except discord.HTTPException as e:
+                    raise e
+
                 except Exception as e:
-                    # print(f"error in AIBehavior: {e}")
+                    await asyncio.sleep(1)
                     await message.channel.send(f"```{e}```")
         
         await self.bot.process_commands(message)
