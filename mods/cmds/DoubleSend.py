@@ -14,11 +14,10 @@ class DoubleSend(commands.Cog):
         self.bot = bot
         self.lastChannelSentMessage = {}
         self._message_filter = {"男娘","南梁"}
-        self._prefix = self.bot.command_prefix
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        if message.author == self.bot.user or message.mentions or message.content.startswith(self._prefix):
+        if message.author == self.bot.user or message.mentions or message.content.startswith(self.bot.command_prefix):
             return
         
         channel_id = str(message.channel.id)

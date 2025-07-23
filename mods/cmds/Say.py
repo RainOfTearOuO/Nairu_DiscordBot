@@ -5,6 +5,7 @@ class Say(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self._message_filter = {"男娘", "南梁"}
+    
     @commands.command()
     async def say(self, ctx: commands.Context, *, msg = None):
         if msg is None:
