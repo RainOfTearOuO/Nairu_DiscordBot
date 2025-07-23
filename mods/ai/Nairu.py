@@ -8,6 +8,13 @@ importlib.reload(aicore)
 
 chat_manager = aicore.build_nairu_manager()
 
+class FilteredWordError(Exception):
+    def __init__(self, word):
+        self.word = word
+    
+    def __str__(self):
+        return f"Filtered word detected: {self.word}"
+
 class Nairu(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -18,54 +25,47 @@ class Nairu(commands.Cog):
         if message.author == self.bot.user:
             return
         
-        if message.reference: # user uses reply to answer bot
-            try:
+        try:
+            if message.reference: # user uses reply to answer bot
                 replied_message = message.reference.resolved
                 if replied_message is None:
                     replied_message = await message.channel.fetch_message(message.reference.message_id)
                 
                 if replied_message.author == self.bot.user:
                     async with message.channel.typing():
-                        final_msg = f"{message.author.name}：{message.content}"
+                        final_msg = f"{message.author.name}:{message.content}"
                         response = chat_manager.send_to_ai(final_msg, str(message.channel.id))
-                        # print(f"finalmsg: {final_msg}")
-                        # print(response)
 
                         for word in self._message_filter:
                             if word in final_msg:
+                                await asyncio.sleep(1)
                                 await message.reply(f"Filtered.")
-                                return
+                                raise FilteredWordError(word)
+                        
                         await asyncio.sleep(1)
-                        await message.reply(f"{response}")
-            
-            except discord.HTTPException as e:
-                raise e
-            
-            except Exception as e:
-                await asyncio.sleep(1)
-                await message.channel.send(f"```{e}```")
-        
-        elif self.bot.user.mentioned_in(message): # user mentions bot
-            async with message.channel.typing():
-                try:
+                        await message.reply(f"{response}")  
+            elif self.bot.user.mentioned_in(message): # user mentions bot
+                async with message.channel.typing():
                     msg_without_mention = message.content.replace(f"<@{self.bot.user.id}>", "").strip()
-                    final_msg = f"{message.author.name}：{msg_without_mention}"
+                    final_msg = f"{message.author.name}:{msg_without_mention}"
                     response = chat_manager.send_to_ai(final_msg, str(message.channel.id))
 
                     for word in self._message_filter:
                         if word in final_msg:
                             await asyncio.sleep(1)
                             await message.reply(f"Filtered.")
-                            return
+                            raise FilteredWordError(word)
+                    
                     await asyncio.sleep(1)
                     await message.reply(f"{response}")
+             
+        except discord.HTTPException as e:
+            print(f"[Nairu] discord.HTTPException: {e}")
 
-                except discord.HTTPException as e:
-                    raise e
-
-                except Exception as e:
-                    await asyncio.sleep(1)
-                    await message.channel.send(f"```{e}```")
+        except Exception as e:
+            print(f"[Nairu] Exception: {e}")
+            await asyncio.sleep(1)
+            await message.channel.send(f"```{e}```")
         
         await self.bot.process_commands(message)
     
