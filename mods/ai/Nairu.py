@@ -58,7 +58,9 @@ class Nairu(commands.Cog):
                     
                     await asyncio.sleep(1)
                     await message.reply(f"{response}")
-             
+        except FilteredWordError as e:
+            print(f"[Nairu] FilteredWordError: {e}")
+            
         except discord.HTTPException as e:
             print(f"[Nairu] discord.HTTPException: {e}")
 

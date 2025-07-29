@@ -23,11 +23,6 @@ class DoubleSend(commands.Cog):
         channel_id = str(message.channel.id)
         
         try:
-            for word in self._message_filter:
-                if word in message.content:
-                    await asyncio.sleep(1)
-                    await message.channel.send(f"Filtered.")
-                    raise FilteredWordError(word)
             if channel_id not in self.lastChannelSentMessage:
                 # no channel history
                 self.lastChannelSentMessage[channel_id] = message.content
@@ -36,6 +31,11 @@ class DoubleSend(commands.Cog):
                 self.lastChannelSentMessage[channel_id] = message.content
             else:
                 async with message.channel.typing():
+                    for word in self._message_filter:
+                        if word in message.content:
+                            await asyncio.sleep(1)
+                            await message.channel.send(f"Filtered.")
+                            raise FilteredWordError(word)
                     await asyncio.sleep(1)
                     await message.channel.send(f"{message.content}")
 
