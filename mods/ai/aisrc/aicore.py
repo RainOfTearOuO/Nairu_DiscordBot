@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 APIKEY = os.environ.get("APIKEY")
 SYS_PROMPT = os.environ.get("SYS_PROMPT")
-MAX_CHAT_HISTORY_LENGTH = 2*6  # Maximum number of messages to keep in chat history
+MAX_CHAT_HISTORY_LENGTH = 2*3  # Maximum number of messages to keep in chat history
 
 class NairuManager:
     def __init__(self, model):
@@ -46,7 +46,7 @@ class NairuManager:
 def build_nairu_manager():
     genai.configure(api_key=APIKEY)
     model = genai.GenerativeModel(
-        model_name='gemini-1.5-flash',
+        model_name='gemini-2.0-flash',
         safety_settings=None,
         system_instruction=SYS_PROMPT
     )

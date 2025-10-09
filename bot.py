@@ -114,7 +114,7 @@ async def run_web_server():
     runner = web.AppRunner(app)
     await runner.setup()
     port = 10000
-    site = web.TCPSite(runner, port=port)
+    site = web.TCPSite(runner, host="0.0.0.0", port=port)
     await site.start()
     print(f"Web server running on port {port}")
 
