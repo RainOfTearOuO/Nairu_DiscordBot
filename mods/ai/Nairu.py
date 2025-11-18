@@ -51,7 +51,7 @@ class Nairu(commands.Cog):
                     response = chat_manager.send_to_ai(final_msg, str(message.channel.id))
 
                     for word in self._message_filter:
-                        if word in final_msg:
+                        if word in response:
                             await asyncio.sleep(1)
                             await message.reply(f"Filtered.")
                             raise FilteredWordError(word)
